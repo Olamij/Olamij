@@ -1,0 +1,58 @@
+// Set your secret key. Remember to switch to your live secret key in production.
+// See your keys here: https://dashboard.stripe.com/apikeys
+Stripe.apiKey = "sk_test_51LI8mXLiH8IxV9YaE4gZvyJn0wJyWJn9FdaSz1OnUWkw8vGWwSmMnu56qCGXWY6NcJ6zsvlJchR4RDTADLvehOA40045Eceach";
+
+PayoutCreateParams params =
+  PayoutCreateParams.builder().setAmount(1000L).setCurrency("default").build();
+
+Payout payout = Payout.create(params);
+
+
+InvoiceItemCreateParams params =
+  InvoiceItemCreateParams
+    .builder()
+    .setCustomer("{{CUSTOMER_ID}}")
+    .setAmount()
+    .setCurrency("default")
+    .build();
+
+InvoiceItem invoiceItem = InvoiceItem.create(params);
+
+
+CreditNoteCreateParams params =
+  CreditNoteCreateParams
+    .builder()
+    .setInvoice("{{INVOICE_ID}}")
+    .setReason(CreditNoteCreateParams.Reason.DUPLICATE)
+    .setAmount()
+    .setCreditAmount()
+    .build();
+
+CreditNote creditNote = CreditNote.create(params);
+
+
+Customer resource = Customer.retrieve("{{CUSTOMER_ID}}");
+CustomerUpdateParams params =
+  CustomerUpdateParams.builder().addExpand("invoice_credit_balance").build();
+
+Customer customer = resource.update(params);
+
+
+SessionCreateParams params =
+  SessionCreateParams.builder()
+    .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+    .setMode(SessionCreateParams.Mode.PAYMENT)
+    .setSuccessUrl("https://example.com/success")
+    .setCancelUrl("https://example.com/cancel")
+    .addLineItem(
+      SessionCreateParams.LineItem.builder()
+        .setPrice("price_H5ggYwtDq4fbrJ")
+        .setQuantity(1L)
+        .build())
+    .setAutomaticTax(
+      SessionCreateParams.AutomaticTax.builder()
+        .setEnabled(true)
+        .build())
+    .build();
+
+Session session = Session.create(params);
